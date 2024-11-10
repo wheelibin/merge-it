@@ -97,12 +97,13 @@ export class GameScene extends Phaser.Scene {
     });
 
     // input events
-    this.input.on("pointerdown", this.handlePointerDown);
+    this.input.on("pointerdown", this.handlePointerMove);
+    this.input.on("pointerup", this.handlePointerUp);
     this.input.on("pointermove", this.handlePointerMove);
     this.matter.world.on("collisionstart", this.handleCollisionStart);
   }
 
-  handlePointerDown = (pointer: any) => {
+  handlePointerUp = (pointer: any) => {
     if (!this.aimImage.visible) {
       return;
     }
@@ -110,7 +111,10 @@ export class GameScene extends Phaser.Scene {
     game.createBlob(
       this,
       this.currentIndex,
-      this.constrainInJar(pointer.x, this.aimImage.width),
+      this.constrainInJar(
+        pointer.x,
+        this.aimImage.width * game.blobs[this.currentIndex].scale,
+      ),
       this.worldHeight - (jarHeight + bottomGap * 2),
     );
   };
@@ -229,12 +233,12 @@ export class GameScene extends Phaser.Scene {
 
     this.nextAimImage.setPosition(this.worldWidth - nextD - padding, 75);
     this.nextAimImage.setTexture(next.name);
-    this.nextAimImage.scale = next.scale;
+    this.nextAimImage.scale = next.scale * 0.75;
   }
 }
 
 function randomIndex(): number {
-  return randomIntFromInterval(0, 4);
+  return randomIntFromInterval(0, game.LastDroppableBlobIndex);
 }
 
 function randomIntFromInterval(min: number, max: number) {

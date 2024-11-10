@@ -7,6 +7,7 @@ type Blob = {
 };
 
 export const BlobSize = 400;
+export const LastDroppableBlobIndex = 4;
 
 export const blobs: Blob[] = [
   { name: "mouse", scale: 0.12, color: 0xff595e },
