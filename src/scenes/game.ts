@@ -40,7 +40,7 @@ export const addJar = (
 
   // jar: left
   scene.jarLeftX = worldWidth / 2 - width / 2;
-  y = worldHeight - height / 2 - bottomGap + 7;
+  y = worldHeight / 2 + height / 2 - bottomGap + 7;
   scene.add
     .line(scene.jarLeftX, y, 0, 0, 0, height, jarColour)
     .setLineWidth(thickness);
@@ -50,7 +50,7 @@ export const addJar = (
 
   // jar: right
   scene.jarRightX = worldWidth / 2 + width / 2;
-  y = worldHeight - height / 2 - bottomGap + 7;
+  y = worldHeight / 2 + height / 2 - bottomGap + 7;
   scene.add
     .line(scene.jarRightX, y, 0, 0, 0, height, jarColour)
     .setLineWidth(thickness);
@@ -60,7 +60,7 @@ export const addJar = (
 
   // jar: bottom
   const x = worldWidth / 2;
-  y = worldHeight - bottomGap;
+  y += height / 2-7;
   scene.add.line(x, y, 0, 0, width, 0, jarColour).setLineWidth(thickness);
   scene.matter.add.rectangle(x, y, width, thickness * 2, {
     isStatic: true,

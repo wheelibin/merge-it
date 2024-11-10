@@ -4,7 +4,7 @@ import * as config from "../config";
 
 const padding = 32;
 const jarThickness = 16;
-const jarWidth = config.GameWidth - padding * 2;
+const jarWidth = config.GameWidth - padding;
 const jarHeight = config.GameHeight - 300;
 const bottomGap = padding;
 
@@ -44,7 +44,6 @@ export class GameScene extends Phaser.Scene {
 
   create() {
     // set the bounds
-
     this.worldWidth = this.scale.gameSize.width;
     this.worldHeight = this.scale.gameSize.height;
     this.matter.world.setBounds(
@@ -55,27 +54,41 @@ export class GameScene extends Phaser.Scene {
     );
 
     // add background
-    const image = this.add.image(
+    const bgImage = this.add.image(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2,
       "bg",
     );
-    image.setTint(0x606060);
-    const scaleX = this.cameras.main.width / image.width;
-    const scaleY = this.cameras.main.height / image.height;
+    bgImage.setTint(0x606060);
+    const scaleX = this.cameras.main.width / bgImage.width;
+    const scaleY = this.cameras.main.height / bgImage.height;
     const scale = Math.max(scaleX, scaleY);
-    image.setScale(scale).setScrollFactor(0);
+    bgImage.setScale(scale).setScrollFactor(0);
 
     // add the jar
     game.addJar(this, jarWidth, jarHeight, jarThickness, bottomGap);
 
-    const s = this.add.text(padding, padding, "SCORE:", {
-      color: "#c5ca30",
-      fontSize: "5em",
-    });
+    this.add.text(
+      this.worldWidth / 2 - jarWidth / 2,
+      this.worldHeight / 2 - 550,
+      "SCORE",
+      {
+        color: "#c5ca30",
+        fontSize: "5em",
+      },
+    );
+    this.add.text(
+      this.worldWidth / 2 + jarWidth / 2 - 115,
+      this.worldHeight / 2 - 550,
+      "NEXT",
+      {
+        color: "#c5ca30",
+        fontSize: "5em",
+      },
+    );
     this.scoreText = this.add.text(
-      padding + (s.width + padding),
-      padding,
+      this.worldWidth / 2 - jarWidth / 2,
+      this.worldHeight / 2 - 494,
       this.score.toString(),
       {
         color: "#c5ca30",
@@ -115,7 +128,7 @@ export class GameScene extends Phaser.Scene {
         pointer.x,
         this.aimImage.width * game.blobs[this.currentIndex].scale,
       ),
-      this.worldHeight - (jarHeight + bottomGap * 2),
+      this.getAimImageY(),
     );
   };
 
@@ -225,15 +238,23 @@ export class GameScene extends Phaser.Scene {
     }
     this.aimImage = this.add.image(
       this.constrainInJar(this.pointerX, nextD),
-      this.worldHeight - (jarHeight + bottomGap * 2),
+      this.getAimImageY(),
       current.name,
     );
     this.aimImage.scale = current.scale;
     this.aimImage.setVisible(true);
 
-    this.nextAimImage.setPosition(this.worldWidth - nextD - padding, 75);
+    // this.nextAimImage.setPosition(this.worldWidth - nextD - padding, 75);
+    this.nextAimImage.setPosition(
+      this.worldWidth / 2 + jarWidth / 2-36,
+      this.worldHeight / 2 - 500+35,
+    );
     this.nextAimImage.setTexture(next.name);
-    this.nextAimImage.scale = next.scale * 0.75;
+    this.nextAimImage.scale=game.blobs[0].scale
+  }
+
+  private getAimImageY() {
+    return this.worldHeight / 2 - padding * 5;
   }
 }
 
