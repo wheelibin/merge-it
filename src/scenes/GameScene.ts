@@ -1,9 +1,12 @@
 import * as Phaser from "phaser";
 import * as entities from "./entities";
 import * as config from "../config";
+import WebFontFile from "../webFontFile";
 
+const uiGoogleFont = "Orbitron";
 const padding = 32;
-
+const uiYOffset = 550;
+const uiLineHeight = 50;
 const jarColour = 0xc5ca30;
 const jarThickness = 16;
 const jarWidth = config.GameWidth - padding;
@@ -31,6 +34,7 @@ export class GameScene extends Phaser.Scene {
     this.load.image("bg", "assets/bg.png");
     this.load.audio("pop", `assets/pop.flac`);
     this.load.audio("hit", `assets/hit.wav`);
+    this.load.addFile(new WebFontFile(this.load, uiGoogleFont));
     for (let index = 0; index < entities.blobs.length; index++) {
       const element = entities.blobs[index];
       this.load.image(element.name, `assets/animals/${element.name}.png`);
@@ -207,22 +211,28 @@ export class GameScene extends Phaser.Scene {
   }
 
   addUI() {
-    this.add.text(this.worldWidth / 2 - jarWidth / 2, this.worldHeight / 2 - 550, "SCORE", {
+    this.add.text(this.worldWidth / 2 - jarWidth / 2, this.worldHeight / 2 - uiYOffset, "SCORE", {
       color: "#c5ca30",
       fontSize: "5em",
+      fontFamily: uiGoogleFont,
     });
-    this.add.text(this.worldWidth / 2 + jarWidth / 2 - 115, this.worldHeight / 2 - 550, "NEXT", {
+    const nextLabel = this.add.text(this.worldWidth / 2 + jarWidth / 2, this.worldHeight / 2 - uiYOffset, "NEXT", {
       color: "#c5ca30",
       fontSize: "5em",
+      fontFamily: uiGoogleFont,
     });
+    // align right
+    nextLabel.setOrigin(1, 0);
+
     this.scoreText = this.add.text(
       this.worldWidth / 2 - jarWidth / 2,
-      this.worldHeight / 2 - 494,
+      this.worldHeight / 2 - uiYOffset + uiLineHeight,
       this.score.toString(),
       {
         color: "#c5ca30",
         fontSize: "5em",
         fontStyle: "bold",
+        fontFamily: uiGoogleFont,
       },
     );
   }
@@ -270,7 +280,11 @@ export class GameScene extends Phaser.Scene {
     this.aimImage.scale = current.scale;
     this.aimImage.setVisible(true);
 
-    this.nextAimImage.setPosition(this.worldWidth / 2 + jarWidth / 2 - 36, this.worldHeight / 2 - 500 + 35);
+    this.nextAimImage.setOrigin(1, 0);
+    this.nextAimImage.setPosition(
+      this.worldWidth / 2 + jarWidth / 2,
+      this.worldHeight / 2 - uiYOffset + uiLineHeight + 10,
+    );
     this.nextAimImage.setTexture(next.name);
     this.nextAimImage.scale = entities.blobs[0].scale;
   }
