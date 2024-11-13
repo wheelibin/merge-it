@@ -3,11 +3,10 @@ import * as entities from "./entities";
 import * as config from "../config";
 import WebFontFile from "../webFontFile";
 
-const uiGoogleFont = "Orbitron";
 const padding = 32;
 const uiYOffset = 550;
 const uiLineHeight = 50;
-const jarColour = 0xc5ca30;
+const jarColour = config.UIColorHex;
 const jarThickness = 16;
 const jarWidth = config.GameWidth - padding;
 const jarHeight = config.GameHeight - 300;
@@ -18,6 +17,7 @@ export class GameScene extends Phaser.Scene {
   emitter: Phaser.GameObjects.Particles.ParticleEmitter;
   jarLeftX: number = 0;
   jarRightX: number = 0;
+  jarTop: number = 0;
   nextAimImage: Phaser.GameObjects.Image;
   nextBlobsQueue: number[] = [randomIndex(), randomIndex()];
   pointerX: number = 0;
@@ -27,14 +27,14 @@ export class GameScene extends Phaser.Scene {
   worldWidth = 0;
 
   constructor() {
-    super("GameScene");
+    super(config.SceneNames.Game);
   }
 
   preload() {
     this.load.image("bg", "assets/bg.png");
     this.load.audio("pop", `assets/pop.flac`);
     this.load.audio("hit", `assets/hit.wav`);
-    this.load.addFile(new WebFontFile(this.load, uiGoogleFont));
+    this.load.addFile(new WebFontFile(this.load, config.UIGoogleFont));
     for (let index = 0; index < entities.blobs.length; index++) {
       const element = entities.blobs[index];
       this.load.image(element.name, `assets/animals/${element.name}.png`);
@@ -72,9 +72,10 @@ export class GameScene extends Phaser.Scene {
     });
 
     // input events
-    this.input.on("pointerdown", this.handlePointerMove);
-    this.input.on("pointerup", this.handlePointerUp);
-    this.input.on("pointermove", this.handlePointerMove);
+    this.input
+      .on("pointerdown", this.handlePointerMove)
+      .on("pointerup", this.handlePointerUp)
+      .on("pointermove", this.handlePointerMove);
     this.matter.world.on("collisionstart", this.handleCollisionStart);
   }
 
@@ -84,7 +85,6 @@ export class GameScene extends Phaser.Scene {
     }
     this.aimImage.setVisible(false);
     this.createBlob(
-      this,
       this.currentIndex,
       this.constrainInJar(pointer.x, this.aimImage.width * entities.blobs[this.currentIndex].scale),
       this.getAimImageY(),
@@ -143,13 +143,22 @@ export class GameScene extends Phaser.Scene {
             const pA = new Phaser.Math.Vector2(bodyA.position.x, bodyA.position.y);
             const pB = new Phaser.Math.Vector2(bodyB.position.x, bodyB.position.y);
             const pos = Phaser.Geom.Point.GetCentroid([pA, pB]);
-            this.emitter.setTexture(entities.blobs[collidedIndex].name);
-            this.emitter.explode(8, pos.x, pos.y);
+            this.emitter.setTexture(entities.blobs[collidedIndex].name).explode(8, pos.x, pos.y);
             bodyA.gameObject.destroy();
             bodyB.gameObject.destroy();
             this.score += 10 * collidedIndex;
             this.scoreText.setText(this.score.toString());
-            this.createBlob(this, collidedIndex + 1, pos.x, pos.y, isMerge);
+            this.createBlob(collidedIndex + 1, pos.x, pos.y, isMerge);
+
+            // if a merged blob is over the jar, game over
+            if (pos.y < this.jarTop) {
+              this.gameOver();
+            }
+          } else {
+            // if a landed blob is over the jar, game over
+            if (bodyA.position.y < this.jarTop || bodyB.position.y < this.jarTop) {
+              this.gameOver();
+            }
           }
         } catch (error) {
           console.error(error);
@@ -184,7 +193,7 @@ export class GameScene extends Phaser.Scene {
 
   addJar() {
     let y: number;
-
+    this.jarTop = this.worldHeight / 2 - (padding + jarThickness);
     // jar: left
     this.jarLeftX = this.worldWidth / 2 - jarWidth / 2;
     y = this.worldHeight / 2 + jarHeight / 2 - padding + jarThickness / 2;
@@ -211,58 +220,67 @@ export class GameScene extends Phaser.Scene {
   }
 
   addUI() {
+    this.add.rectangle(this.worldWidth / 2, 0, this.worldWidth, 300, 0x000, 0.7).setOrigin(0.5, 0);
+
+    this.add
+      .text(this.worldWidth / 2, 60, "MERGIC", {
+        color: config.UIColor,
+        fontSize: "15em",
+        fontFamily: config.UIGoogleFont,
+        fontStyle: "bold",
+      })
+      .setOrigin(0.5, 0);
     this.add.text(this.worldWidth / 2 - jarWidth / 2, this.worldHeight / 2 - uiYOffset, "SCORE", {
-      color: "#c5ca30",
+      color: config.UIColor,
       fontSize: "5em",
-      fontFamily: uiGoogleFont,
+      fontFamily: config.UIGoogleFont,
     });
-    const nextLabel = this.add.text(this.worldWidth / 2 + jarWidth / 2, this.worldHeight / 2 - uiYOffset, "NEXT", {
-      color: "#c5ca30",
-      fontSize: "5em",
-      fontFamily: uiGoogleFont,
-    });
-    // align right
-    nextLabel.setOrigin(1, 0);
+    this.add
+      .text(this.worldWidth / 2 + jarWidth / 2, this.worldHeight / 2 - uiYOffset, "NEXT", {
+        color: config.UIColor,
+        fontSize: "5em",
+        fontFamily: config.UIGoogleFont,
+      })
+      .setOrigin(1, 0);
 
     this.scoreText = this.add.text(
       this.worldWidth / 2 - jarWidth / 2,
       this.worldHeight / 2 - uiYOffset + uiLineHeight,
       this.score.toString(),
       {
-        color: "#c5ca30",
+        color: config.UIColor,
         fontSize: "5em",
         fontStyle: "bold",
-        fontFamily: uiGoogleFont,
+        fontFamily: config.UIGoogleFont,
       },
     );
   }
 
-  createBlob(scene: GameScene, index: number, x: number, y: number, isMerge: boolean = false) {
+  createBlob(index: number, x: number, y: number, isMerge: boolean = false) {
     try {
       const blob = entities.blobs[index];
       const D = entities.BlobSize * blob.scale;
-      const f = scene.matter.add.image(x, y, blob.name, undefined, {
-        mass: 1,
-      });
-      f.setCircle(D / 2);
-      f.scale = blob.scale;
+
+      this.matter.add
+        .image(x, y, blob.name, undefined, {
+          mass: 1,
+        })
+        .setCircle(D / 2)
+        .setName(blob.name)
+        .setData("landed", isMerge)
+        .setData("index", index).scale = blob.scale;
 
       // f.setFriction(0.005);
       // f.setBounce(1);
 
-      f.setName(blob.name);
-      f.setData("landed", isMerge);
-      f.setData("index", index);
-
       if (isMerge) {
         try {
-          scene.sound.play(blob.name, { rate: 1.3 });
+          this.sound.play(blob.name, { rate: 1.3 });
           // scene.sound.play("pop");
         } catch (error) {
           console.warn(error);
         }
       }
-      return f;
     } catch (error) {
       console.error(error);
     }
@@ -275,18 +293,20 @@ export class GameScene extends Phaser.Scene {
     const next = entities.blobs[this.nextBlobsQueue[0]];
     const nextD = entities.BlobSize * next.scale;
 
-    this.aimImage.setPosition(this.constrainInJar(this.pointerX, nextD), this.getAimImageY());
-    this.aimImage.setTexture(current.name);
-    this.aimImage.scale = current.scale;
-    this.aimImage.setVisible(true);
+    this.aimImage
+      .setPosition(this.constrainInJar(this.pointerX, nextD), this.getAimImageY())
+      .setTexture(current.name)
+      .setVisible(true).scale = current.scale;
 
-    this.nextAimImage.setOrigin(1, 0);
-    this.nextAimImage.setPosition(
-      this.worldWidth / 2 + jarWidth / 2,
-      this.worldHeight / 2 - uiYOffset + uiLineHeight + 10,
-    );
-    this.nextAimImage.setTexture(next.name);
-    this.nextAimImage.scale = entities.blobs[0].scale;
+    this.nextAimImage
+      .setOrigin(1, 0)
+      .setPosition(this.worldWidth / 2 + jarWidth / 2, this.worldHeight / 2 - uiYOffset + uiLineHeight + 10)
+      .setTexture(next.name).scale = entities.blobs[0].scale;
+  }
+
+  gameOver() {
+    this.scene.pause(config.SceneNames.Game);
+    this.scene.launch(config.SceneNames.GameOver);
   }
 }
 

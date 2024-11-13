@@ -2,6 +2,14 @@ import * as Phaser from "phaser";
 
 export const GameWidth = 768;
 export const GameHeight = 1024;
+export const UIGoogleFont = "Orbitron";
+export const UIColorHex = 0xc5ca30;
+export const UIColor = "#c5ca30";
+
+export enum SceneNames {
+  Game = "GameScene",
+  GameOver = "GameOverScene",
+}
 
 export const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -10,7 +18,7 @@ export const config: Phaser.Types.Core.GameConfig = {
     default: "matter",
     matter: {
       enableSleeping: true,
-      // debug: true,
+      debug: true,
       gravity: {
         x: 0,
         y: 3,
