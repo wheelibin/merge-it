@@ -5,6 +5,8 @@ export const GameHeight = 1024;
 export const UIGoogleFont = "Orbitron";
 export const UIColorHex = 0xc5ca30;
 export const UIColor = "#c5ca30";
+export const UIColorAltHex = 0xff595e;
+export const UIColorAlt = "#ff595e";
 
 export enum SceneNames {
   Game = "GameScene",
@@ -18,26 +20,18 @@ export const config: Phaser.Types.Core.GameConfig = {
     default: "matter",
     matter: {
       enableSleeping: true,
-      debug: true,
+      // debug: true,
       gravity: {
         x: 0,
         y: 3,
       },
     },
   },
-  // width: 768,
-  // height: 1024,
-  width: window.innerWidth,
-  height: window.innerHeight,
+  backgroundColor: "#000",
+  width: GameWidth,
+  height: GameHeight,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  // scale: {
-  //   width: 360,
-  //   height: 640,
-  //   // resolution: window.devicePixelRatio,
-  //   mode: Phaser.Scale.RESIZE,
-  //   autoCenter: Phaser.Scale.CENTER_BOTH,
-  // },
 };

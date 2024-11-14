@@ -3,13 +3,13 @@ import * as entities from "./entities";
 import * as config from "../config";
 import WebFontFile from "../webFontFile";
 
+const gameTitle = "BLOOP";
 const padding = 32;
-const uiYOffset = 550;
 const uiLineHeight = 50;
 const jarColour = config.UIColorHex;
 const jarThickness = 16;
-const jarWidth = config.GameWidth - padding;
-const jarHeight = config.GameHeight - 300;
+const jarWidth = config.GameWidth - 200;
+const jarHeight = config.GameHeight - 500;
 
 export class GameScene extends Phaser.Scene {
   aimImage: Phaser.GameObjects.Image;
@@ -25,6 +25,7 @@ export class GameScene extends Phaser.Scene {
   scoreText: Phaser.GameObjects.Text;
   worldHeight = 0;
   worldWidth = 0;
+  uiYOffset = 550;
 
   constructor() {
     super(config.SceneNames.Game);
@@ -43,10 +44,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
+    this.score = 0;
+
     // set the bounds
     this.worldWidth = this.scale.gameSize.width;
     this.worldHeight = this.scale.gameSize.height;
-    this.matter.world.setBounds(undefined, undefined, undefined, this.worldHeight);
+    this.matter.world.setBounds(undefined, undefined, this.worldWidth, this.worldHeight);
+    this.uiYOffset = 380;
 
     // add background
     this.addBackground();
@@ -59,7 +63,9 @@ export class GameScene extends Phaser.Scene {
 
     // queue up current and next blobs
     this.aimImage = this.add.image(0, 0, "");
+    // this.aimImage.preFX?.addShadow();
     this.nextAimImage = this.add.image(0, 0, "");
+    this.nextAimImage.preFX?.addShadow();
     this.queueNext();
 
     // add an emitter for explosion on merge
@@ -154,14 +160,14 @@ export class GameScene extends Phaser.Scene {
             if (pos.y < this.jarTop) {
               this.gameOver();
             }
-          } else {
-            // if a landed blob is over the jar, game over
-            if (bodyA.position.y < this.jarTop || bodyB.position.y < this.jarTop) {
-              this.gameOver();
-            }
           }
         } catch (error) {
           console.error(error);
+        }
+      } else {
+        // if a landed blob is over the jar, game over
+        if (bodyA.position.y < this.jarTop || bodyB.position.y < this.jarTop) {
+          this.gameOver();
         }
       }
     }
@@ -220,32 +226,38 @@ export class GameScene extends Phaser.Scene {
   }
 
   addUI() {
-    this.add.rectangle(this.worldWidth / 2, 0, this.worldWidth, 300, 0x000, 0.7).setOrigin(0.5, 0);
+    this.add.rectangle(this.worldWidth / 2, 0, this.worldWidth, 125, 0x000, 0.7).setOrigin(0.5, 0);
 
     this.add
-      .text(this.worldWidth / 2, 60, "MERGIC", {
+      .text(this.worldWidth / 2, 1, gameTitle, {
         color: config.UIColor,
-        fontSize: "15em",
+        fontSize: "100px",
         fontFamily: config.UIGoogleFont,
         fontStyle: "bold",
       })
-      .setOrigin(0.5, 0);
-    this.add.text(this.worldWidth / 2 - jarWidth / 2, this.worldHeight / 2 - uiYOffset, "SCORE", {
-      color: config.UIColor,
-      fontSize: "5em",
-      fontFamily: config.UIGoogleFont,
-    });
+      .setOrigin(0.5, 0)
+      .preFX?.addShadow();
+
     this.add
-      .text(this.worldWidth / 2 + jarWidth / 2, this.worldHeight / 2 - uiYOffset, "NEXT", {
+      .text(this.worldWidth / 2 - jarWidth / 2, this.worldHeight / 2 - this.uiYOffset, "SCORE", {
         color: config.UIColor,
         fontSize: "5em",
         fontFamily: config.UIGoogleFont,
       })
-      .setOrigin(1, 0);
+      .preFX?.addShadow();
+
+    this.add
+      .text(this.worldWidth / 2 + jarWidth / 2, this.worldHeight / 2 - this.uiYOffset, "NEXT", {
+        color: config.UIColor,
+        fontSize: "5em",
+        fontFamily: config.UIGoogleFont,
+      })
+      .setOrigin(1, 0)
+      .preFX?.addShadow();
 
     this.scoreText = this.add.text(
       this.worldWidth / 2 - jarWidth / 2,
-      this.worldHeight / 2 - uiYOffset + uiLineHeight,
+      this.worldHeight / 2 - this.uiYOffset + uiLineHeight,
       this.score.toString(),
       {
         color: config.UIColor,
@@ -254,6 +266,7 @@ export class GameScene extends Phaser.Scene {
         fontFamily: config.UIGoogleFont,
       },
     );
+    this.scoreText.preFX?.addShadow();
   }
 
   createBlob(index: number, x: number, y: number, isMerge: boolean = false) {
@@ -296,17 +309,19 @@ export class GameScene extends Phaser.Scene {
     this.aimImage
       .setPosition(this.constrainInJar(this.pointerX, nextD), this.getAimImageY())
       .setTexture(current.name)
-      .setVisible(true).scale = current.scale;
+      .setVisible(true);
+    this.aimImage.scale = current.scale;
 
     this.nextAimImage
       .setOrigin(1, 0)
-      .setPosition(this.worldWidth / 2 + jarWidth / 2, this.worldHeight / 2 - uiYOffset + uiLineHeight + 10)
-      .setTexture(next.name).scale = entities.blobs[0].scale;
+      .setPosition(this.worldWidth / 2 + jarWidth / 2, this.worldHeight / 2 - this.uiYOffset + uiLineHeight + 10)
+      .setTexture(next.name);
+    this.nextAimImage.scale = entities.blobs[0].scale;
   }
 
   gameOver() {
     this.scene.pause(config.SceneNames.Game);
-    this.scene.launch(config.SceneNames.GameOver);
+    this.scene.launch(config.SceneNames.GameOver, { finalScore: this.score });
   }
 }
 

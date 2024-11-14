@@ -7,7 +7,7 @@ export type Blob = {
 export const BlobSize = 400;
 export const LastDroppableBlobIndex = 4;
 
-const globalScaleFactor = 1.2;
+const globalScaleFactor = 1;
 
 export const blobs: Blob[] = [
   { name: "mouse", scale: 0.12 * globalScaleFactor, color: 0xff595e },
