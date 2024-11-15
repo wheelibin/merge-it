@@ -89,12 +89,10 @@ export class GameScene extends Phaser.Scene {
     if (!this.aimImage.visible) {
       return;
     }
+    const aimImageWidth = this.aimImage.width * entities.blobs[this.currentIndex].scale;
+
     this.aimImage.setVisible(false);
-    this.createBlob(
-      this.currentIndex,
-      this.constrainInJar(pointer.x, this.aimImage.width * entities.blobs[this.currentIndex].scale),
-      this.getAimImageY(),
-    );
+    this.createBlob(this.currentIndex, this.constrainInJar(pointer.x, aimImageWidth), this.getAimImageY());
   };
 
   handlePointerMove = (pointer: Phaser.Input.Pointer) => {
@@ -175,9 +173,9 @@ export class GameScene extends Phaser.Scene {
 
   constrainInJar(x: number, width: number) {
     const R = width / 2;
-    if (x < this.jarLeftX + R) {
+    if (x < this.jarLeftX + R + jarThickness) {
       return this.jarLeftX + R + jarThickness;
-    } else if (x > this.jarRightX - R) {
+    } else if (x > this.jarRightX - R - jarThickness) {
       return this.jarRightX - (R + jarThickness);
     } else {
       return x;
