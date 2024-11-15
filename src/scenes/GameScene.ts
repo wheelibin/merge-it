@@ -33,7 +33,6 @@ export class GameScene extends Phaser.Scene {
 
   preload() {
     this.load.image("bg", "assets/bg.png");
-    this.load.audio("pop", `assets/pop.flac`);
     this.load.audio("hit", `assets/hit.wav`);
     this.load.addFile(new WebFontFile(this.load, config.UIGoogleFont));
     for (let index = 0; index < entities.blobs.length; index++) {
@@ -289,7 +288,6 @@ export class GameScene extends Phaser.Scene {
       if (isMerge) {
         try {
           this.sound.play(blob.name, { rate: 1.3 });
-          // scene.sound.play("pop");
         } catch (error) {
           console.warn(error);
         }
