@@ -1,24 +1,16 @@
 {
-  "name": "phaser3-rollup-typescript",
+  "name": "merge-it",
   "version": "1.1.0",
-  "description": "Phaser 3 TypeScript Starter",
-  "main": "dist/index.js",
+  "description": "Falling blob game",
+  "main": "dist/index.html",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
     "serve": "vite preview",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/geocine/phaser3-rollup-typescript.git"
-  },
-  "author": "Aivan Monceller",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/geocine/phaser3-rollup-typescript/issues"
-  },
-  "homepage": "https://github.com/geocine/phaser3-rollup-typescript#readme",
+  "homepage": ".",
   "dependencies": {
     "phaser": "^3.86.0",
     "webfontloader": "^1.6.28"
