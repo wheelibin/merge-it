@@ -1,6 +1,6 @@
 {
   "name": "merge-it",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Falling blob game",
   "main": "dist/index.html",
   "scripts": {
