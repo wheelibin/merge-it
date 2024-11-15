@@ -3,7 +3,7 @@ import * as entities from "./entities";
 import * as config from "../config";
 import WebFontFile from "../webFontFile";
 
-const gameTitle = "BLOOP";
+const gameTitle = "MERGE-IT";
 const padding = 32;
 const uiLineHeight = 50;
 const jarColour = config.UIColorHex;
@@ -109,22 +109,24 @@ export class GameScene extends Phaser.Scene {
         this.queueNext();
       }
 
-      // // play sound when landed
-      // if (bodyA.gameObject && bodyA.gameObject.getData("landed") === false) {
-      //   try {
-      //     this.sound.play(bodyA.gameObject.name, { rate: 1.5 });
-      //   } catch (error) {
-      //     console.debug(error);
-      //     //
-      //   }
-      // }
-      // if (bodyB.gameObject && bodyB.gameObject.getData("landed") === false) {
-      //   try {
-      //     this.sound.play(bodyB.gameObject.name, { rate: 1.5 });
-      //   } catch (error) {
-      //     //
-      //   }
-      // }
+      // play sound when landed
+      if (bodyA.gameObject && bodyA.gameObject.getData("landed") === false) {
+        try {
+          // this.sound.play(bodyA.gameObject.name, { rate: 1.5 });
+          this.sound.play("hit");
+        } catch (error) {
+          console.debug(error);
+          //
+        }
+      }
+      if (bodyB.gameObject && bodyB.gameObject.getData("landed") === false) {
+        try {
+          // this.sound.play(bodyB.gameObject.name, { rate: 1.5 });
+          this.sound.play("hit");
+        } catch (error) {
+          //
+        }
+      }
 
       bodyA.gameObject?.setData("landed", true);
       bodyB.gameObject?.setData("landed", true);
@@ -231,7 +233,7 @@ export class GameScene extends Phaser.Scene {
         color: config.UIColor,
         fontSize: "100px",
         fontFamily: config.UIGoogleFont,
-        fontStyle: "bold",
+        // fontStyle: "bold",
       })
       .setOrigin(0.5, 0)
       .preFX?.addShadow();

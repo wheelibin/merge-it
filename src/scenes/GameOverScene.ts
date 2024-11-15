@@ -5,7 +5,7 @@ type sceneData = {
   finalScore: number;
 };
 
-const sceneHeight = 500;
+const sceneHeight = 300;
 const sceneAlpha = 0.7;
 
 export class GameOverScene extends Phaser.Scene {
@@ -34,31 +34,31 @@ export class GameOverScene extends Phaser.Scene {
     const middleY = this.worldHeight / 2;
 
     this.add
-      .rectangle(middleX, middleY, (this.worldWidth / 3) * 2, sceneHeight, 0x000, 1)
+      .rectangle(middleX, middleY, (this.worldWidth / 3) * 2, sceneHeight, 0x000, 0.5)
       .setOrigin(0.5, 0.5)
       .setStrokeStyle(1, config.UIColorAltHex);
     this.add
-      .text(middleX, middleY - sceneHeight / 3, "GAME OVER", {
+      .text(middleX, middleY - sceneHeight / 4, "GAME OVER", {
         color: config.UIColorAlt,
         fontSize: "5em",
-        fontStyle: "bold",
+        // fontStyle: "bold",
         fontFamily: config.UIGoogleFont,
       })
       .setOrigin(0.5, 1)
       .preFX?.addShadow();
 
     this.add
-      .text(middleX, middleY, this.finalScore.toLocaleString(), {
+      .text(middleX, middleY+30, this.finalScore.toLocaleString(), {
         color: config.UIColor,
         fontSize: "5em",
-        fontStyle: "bold",
+        // fontStyle: "bold",
         fontFamily: config.UIGoogleFont,
       })
       .setOrigin(0.5, 1);
 
     this.add
-      .text(middleX, middleY + 50, "FINAL SCORE", {
-        color: config.UIColor,
+      .text(middleX, middleY + 70, "FINAL SCORE", {
+        color: config.UIColorAlt,
         fontSize: "3em",
         fontFamily: config.UIGoogleFont,
       })

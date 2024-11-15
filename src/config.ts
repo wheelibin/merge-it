@@ -2,7 +2,7 @@ import * as Phaser from "phaser";
 
 export const GameWidth = 768;
 export const GameHeight = 1024;
-export const UIGoogleFont = "Orbitron";
+export const UIGoogleFont = "Cherry Bomb One";
 export const UIColorHex = 0xc5ca30;
 export const UIColor = "#c5ca30";
 export const UIColorAltHex = 0xff595e;
