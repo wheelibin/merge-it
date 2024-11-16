@@ -66,7 +66,6 @@ export class GameOverScene extends Phaser.Scene {
         ).setOrigin(1);
       }
       if (s.date) {
-        console.log(new Date(s.date).toDateString())
         this.addText(
           new Date(s.date).toDateString(),
           startX + gapX * 2,

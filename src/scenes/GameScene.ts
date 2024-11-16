@@ -88,14 +88,15 @@ export class GameScene extends Phaser.Scene {
     if (!this.aimImage.visible) {
       return;
     }
-    const aimImageWidth = this.aimImage.width * entities.blobs[this.currentIndex].scale;
 
     this.aimImage.setVisible(false);
+    const aimImageWidth = this.aimImage.width * entities.blobs[this.currentIndex].scale;
     this.createBlob(this.currentIndex, this.constrainInJar(pointer.x, aimImageWidth), this.getAimImageY());
   };
 
   handlePointerMove = (pointer: Phaser.Input.Pointer) => {
-    this.aimImage.x = this.constrainInJar(pointer.x, this.aimImage.width * entities.blobs[this.currentIndex].scale);
+    const aimImageWidth = this.aimImage.width * entities.blobs[this.currentIndex].scale;
+    this.aimImage.x = this.constrainInJar(pointer.x, aimImageWidth);
     this.pointerX = this.aimImage.x;
   };
 
@@ -203,7 +204,8 @@ export class GameScene extends Phaser.Scene {
     this.jarLeftX = this.worldWidth / 2 - jarWidth / 2;
     y = this.worldHeight / 2 + jarHeight / 2 - padding + jarThickness / 2;
     this.add.line(this.jarLeftX, y, 0, 0, 0, jarHeight, jarColour).setLineWidth(jarThickness);
-    this.matter.add.rectangle(this.jarLeftX, y, jarThickness * 2, jarHeight, {
+    // extend the height of the matter rectangle so blobs can't fall out
+    this.matter.add.rectangle(this.jarLeftX, y, jarThickness * 2, jarHeight * 2, {
       isStatic: true,
     });
 
@@ -211,7 +213,8 @@ export class GameScene extends Phaser.Scene {
     this.jarRightX = this.worldWidth / 2 + jarWidth / 2;
     y = this.worldHeight / 2 + jarHeight / 2 - padding + jarThickness / 2;
     this.add.line(this.jarRightX, y, 0, 0, 0, jarHeight, jarColour).setLineWidth(jarThickness);
-    this.matter.add.rectangle(this.jarRightX, y, jarThickness * 2, jarHeight, {
+    // extend the height of the matter rectangle so blobs can't fall out
+    this.matter.add.rectangle(this.jarRightX, y, jarThickness * 2, jarHeight * 2, {
       isStatic: true,
     });
 
@@ -301,11 +304,11 @@ export class GameScene extends Phaser.Scene {
     this.nextBlobsQueue.push(randomIndex());
 
     const current = entities.blobs[this.currentIndex];
+    const currentD = entities.BlobSize * current.scale;
     const next = entities.blobs[this.nextBlobsQueue[0]];
-    const nextD = entities.BlobSize * next.scale;
 
     this.aimImage
-      .setPosition(this.constrainInJar(this.pointerX, nextD), this.getAimImageY())
+      .setPosition(this.constrainInJar(this.pointerX, currentD), this.getAimImageY())
       .setTexture(current.name)
       .setVisible(true);
     this.aimImage.scale = current.scale;
