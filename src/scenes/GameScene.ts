@@ -154,10 +154,10 @@ export class GameScene extends Phaser.Scene {
             bodyB.gameObject.destroy();
             this.score += 10 * collidedIndex;
             this.scoreText.setText(this.score.toString());
-            this.createBlob(collidedIndex + 1, pos.x, pos.y, isMerge);
+            const b = this.createBlob(collidedIndex + 1, pos.x, pos.y, isMerge);
 
             // if a merged blob is over the jar, game over
-            if (pos.y < this.jarTop) {
+            if ((b?.body?.velocity.y || 0) < 1 && pos.y < this.jarTop) {
               this.gameOver();
             }
           }
@@ -166,7 +166,9 @@ export class GameScene extends Phaser.Scene {
         }
       } else {
         // if a landed blob is over the jar, game over
-        if (bodyA.position.y < this.jarTop || bodyB.position.y < this.jarTop) {
+        const bodyAOver = bodyA.velocity.y < 1 && bodyA.position.y < this.jarTop;
+        const bodyBOver = bodyB.velocity.y < 1 && bodyB.position.y < this.jarTop;
+        if (bodyAOver || bodyBOver) {
           this.gameOver();
         }
       }
@@ -276,14 +278,15 @@ export class GameScene extends Phaser.Scene {
       const blob = entities.blobs[index];
       const D = entities.BlobSize * blob.scale;
 
-      this.matter.add
+      const b = this.matter.add
         .image(x, y, blob.name, undefined, {
           mass: 1,
         })
         .setCircle(D / 2)
         .setName(blob.name)
         .setData("landed", isMerge)
-        .setData("index", index).scale = blob.scale;
+        .setData("index", index);
+      b.scale = blob.scale;
 
       // f.setFriction(0.005);
       // f.setBounce(1);
@@ -295,6 +298,8 @@ export class GameScene extends Phaser.Scene {
           console.warn(error);
         }
       }
+
+      return b;
     } catch (error) {
       console.error(error);
     }
