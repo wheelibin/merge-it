@@ -156,10 +156,10 @@ export class GameScene extends Phaser.Scene {
             this.scoreText.setText(this.score.toString());
             const b = this.createBlob(collidedIndex + 1, pos.x, pos.y, isMerge);
 
-            // if a merged blob is over the jar, game over
-            if ((b?.body?.velocity.y || 0) < 1 && pos.y < this.jarTop) {
-              this.gameOver();
-            }
+            // // if a merged blob is over the jar, game over
+            // if ((b?.body?.velocity.y || 0) < 1 && pos.y < this.jarTop) {
+            //   this.gameOver();
+            // }
           }
         } catch (error) {
           console.error(error);
