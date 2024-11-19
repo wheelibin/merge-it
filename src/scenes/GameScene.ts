@@ -280,7 +280,7 @@ export class GameScene extends Phaser.Scene {
 
       const b = this.matter.add
         .image(x, y, blob.name, undefined, {
-          mass: 1,
+          mass: 500 * blob.scale,
         })
         .setCircle(D / 2)
         .setName(blob.name)
@@ -288,8 +288,8 @@ export class GameScene extends Phaser.Scene {
         .setData("index", index);
       b.scale = blob.scale;
 
-      // f.setFriction(0.005);
-      // f.setBounce(1);
+      // b.setFriction(0.005);
+      b.setBounce(0.3);
 
       if (isMerge) {
         try {
