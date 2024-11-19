@@ -8,8 +8,8 @@ const padding = 32;
 const uiLineHeight = 50;
 const jarColour = config.UIColorHex;
 const jarThickness = 16;
-const jarWidth = config.GameWidth - 200;
-const jarHeight = config.GameHeight - 500;
+const jarWidth = 600; //config.GameWidth - 200;
+const jarHeight = 600; // config.GameHeight - 500;
 
 export class GameScene extends Phaser.Scene {
   aimImage: Phaser.GameObjects.Image;
